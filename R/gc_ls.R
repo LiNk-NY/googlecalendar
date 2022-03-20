@@ -20,7 +20,7 @@
 #' @template verbose
 #'
 #' @return A \code{googlecalendar_ls} object (a custom class wrapping a
-#'   \code{\link[dplyr]{tbl_df}}) with one row for each event returned
+#'   \code{\link[tibble]{tibble}}) with one row for each event returned
 #'   by the service.
 #'
 #' @examples

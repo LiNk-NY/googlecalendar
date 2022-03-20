@@ -35,7 +35,7 @@
 #' @template verbose
 #'
 #' @return An \code{event_ls} object (a custom class wrapping a
-#'   \code{\link[dplyr]{tbl_df}}) with one row for each event returned
+#'   \code{\link[tibble]{tibble}}) with one row for each event returned
 #'   by the service.
 #'
 #' @examples
@@ -71,6 +71,19 @@ gc_event_ls <- function(x, ..., verbose = FALSE) {
     return(invisible(NULL))
   }
 
-  as.event_ls(ls_raw)
+  ls_raw
 
+}
+
+#' @export
+gc_events <- function(x, maxResults = 250) {
+  stopifnot(methods::is(x, "googlecalendar"))
+  path <- file.path("calendars", x$id, "events")
+  url <- paste0(path, "?", "maxResults=", maxResults)
+  resp <- GET_resource(url)
+  ls_raw <- json_content(resp, flatten = TRUE)$items
+  if (!length(ls_raw))
+    stop("No events for ", x$id, " found.")
+
+  ls_raw
 }
