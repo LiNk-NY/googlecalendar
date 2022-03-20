@@ -4,7 +4,10 @@
 \alias{gc_token}
 \title{Generate a Google token}
 \usage{
-gc_token()
+gc_token(file = "googlecalendar_token.rds")
+}
+\arguments{
+\item{file}{character(1) The file path to the 'googlecalendar_token.rds' file}
 }
 \value{
 A \code{httr} request object.
@@ -14,4 +17,3 @@ Produces a token for interaction with the Google Calendar API by
 either reauthorizing the application or loading a cached token.
 }
 \keyword{internal}
-

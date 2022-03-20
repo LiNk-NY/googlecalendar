@@ -10,16 +10,16 @@ gc_event_ls(x, ..., verbose = FALSE)
 \item{x}{A \code{googlecalendar} object representing the calendar for
 which to list events.}
 
-\item{verbose}{Logical indicating whether to print informative
-messages.}
-
 \item{\dots}{Additional parameters to be passed as part of the HTTP
 request to the API. More information on these named arguments are
 available below.}
+
+\item{verbose}{Logical indicating whether to print informative
+messages.}
 }
 \value{
 An \code{event_ls} object (a custom class wrapping a
-  \code{\link[dplyr]{tbl_df}}) with one row for each event returned
+  \code{\link[tibble]{tibble}}) with one row for each event returned
   by the service.
 }
 \description{
@@ -58,4 +58,3 @@ gc_summary("Commitments") \%>\%
 }
 
 }
-
