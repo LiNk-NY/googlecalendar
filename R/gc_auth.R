@@ -73,7 +73,7 @@ gc_auth <- function(new_user = FALSE,
 
   } else {
 
-    scope <- "https://www.googleapis.com/auth/calendar"
+    scope <- "https://www.googleapis.com/auth/calendar.readonly"
     gc_app <- httr::oauth_app("google", key = key, secret = secret)
 
     gc_token <-
@@ -145,14 +145,15 @@ gc_deauth <- function(clear_cache = TRUE, verbose = TRUE) {
 #' Produces a token for interaction with the Google Calendar API by
 #' either reauthorizing the application or loading a cached token.
 #'
+#' @param file character(1) The file path to the 'googlecalendar_token.rds' file
+#'
 #' @return A \code{httr} request object.
 #'
 #' @keywords internal
-gc_token <- function() {
+gc_token <- function(file = "googlecalendar_token.rds") {
 
-  if(!token_available()) {
+  if (!file.exists(file) && !token_available())
     gc_auth()
-  }
 
   httr::config(token = .cred$token)
 
