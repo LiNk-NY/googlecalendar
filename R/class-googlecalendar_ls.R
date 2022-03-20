@@ -2,7 +2,7 @@ as.googlecalendar_ls <- function(x) UseMethod("as.googlecalendar_ls", x)
 
 as.googlecalendar_ls.data.frame <- function(x) {
 
-  structure(dplyr::tbl_df(data.frame(
+  structure(tibble::tibble(data.frame(
     etag = x$etag,
     id = x$id,
     summary = x$summary,
@@ -26,7 +26,7 @@ as.googlecalendar_ls.data.frame <- function(x) {
 
 #' @export
 print.googlecalendar_ls <- function(x, ...) {
-  x %>%
-    dplyr::mutate_each(dplyr::funs_(~ truncate_col(.))) %>%
-    print()
+  print(
+    do.call(cbind.data.frame, lapply(x, truncate_col))
+  )
 }

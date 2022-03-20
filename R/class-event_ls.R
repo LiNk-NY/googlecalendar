@@ -2,7 +2,7 @@ as.event_ls <- function(x) UseMethod("as.event_ls", x)
 
 as.event_ls.data.frame <- function(x) {
 
-  structure(dplyr::tbl_df(data.frame(
+  structure(tibble::tibble(data.frame(
     etag = x$etag,
     id = x$id,
     status = x$status %||% NA_character_,
@@ -59,7 +59,8 @@ as.event_ls.data.frame <- function(x) {
 
 #' @export
 print.event_ls <- function(x, ...) {
-  x %>%
-    dplyr::mutate_each(dplyr::funs_(~ truncate_col(.))) %>%
-    print(...)
+  print(
+    do.call(cbind.data.frame, lapply(x, truncate_col)),
+    ...
+  )
 }
