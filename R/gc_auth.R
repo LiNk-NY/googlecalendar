@@ -48,44 +48,34 @@
 #'
 #' @examples
 #' \dontrun{
-#' gs_auth()
-#' gs_auth(token = readRDS("saved_token.rds"))
-#' gs_auth(token = "saved_token.rds")
+#'   gc_auth()
+#'   gc_auth(token = readRDS("saved_token.rds"))
+#'   gc_auth(token = "saved_token.rds")
 #' }
-gc_auth <- function(new_user = FALSE,
-                    key = getOption("googlecalendar.client_key"),
-                    secret = getOption("googlecalendar.client_secret"),
-                    cache = getOption("googlecalendar.oauth_cache"),
-                    token = NULL,
-                    verbose = FALSE) {
-
-  if (new_user) {
-    gc_deauth(clear_cache = TRUE, verbose = verbose)
-  }
-
-  if (!is.null(token)) {
-
-    if(methods::is(token, "character")) {
-      token <- readRDS(token)
+gc_auth <- function(
+    new_user = FALSE,
+    key = getOption("googlecalendar.client_key"),
+    secret = getOption("googlecalendar.client_secret"),
+    cache = getOption("googlecalendar.oauth_cache", TRUE),
+    token = NULL,
+    verbose = FALSE
+) {
+    if (new_user)
+        gc_deauth(clear_cache = TRUE, verbose = verbose)
+    if (is.character(token))
+        token <- readRDS(token)
+    if (is.null(token)) {
+        scope <- "https://www.googleapis.com/auth/calendar.readonly"
+        gc_app <- httr::oauth_app("google", key = key, secret = secret)
+        token <- httr::oauth2.0_token(
+            endpoint = httr::oauth_endpoints("google"),
+            app = gc_app,
+            scope = scope,
+            cache = cache
+        )
     }
-
     .cred$token <- token
-
-  } else {
-
-    scope <- "https://www.googleapis.com/auth/calendar.readonly"
-    gc_app <- httr::oauth_app("google", key = key, secret = secret)
-
-    gc_token <-
-      httr::oauth_endpoints("google") %>%
-      httr::oauth2.0_token(gc_app, scope, cache = cache)
-
-    .cred$token <- gc_token
-
-  }
-
-  invisible(.cred$token)
-
+    invisible(.cred$token)
 }
 
 #' Deauthorize requests to the Google Calendar API
@@ -152,8 +142,10 @@ gc_deauth <- function(clear_cache = TRUE, verbose = TRUE) {
 #' @keywords internal
 gc_token <- function(file = "googlecalendar_token.rds") {
 
-  if (!file.exists(file) && !token_available())
-    gc_auth()
+  if (file.exists(file) && !token_available())
+      gc_auth(token = file)
+  else
+      gc_auth()
 
   httr::config(token = .cred$token)
 
@@ -169,11 +161,5 @@ gc_token <- function(file = "googlecalendar_token.rds") {
 #'
 #' @keywords internal
 token_available <- function() {
-
-  if (is.null(.cred$token)) {
-    return(FALSE)
-  }
-
-  TRUE
-
+    !is.null(.cred$token)
 }
